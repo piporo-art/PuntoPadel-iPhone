@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#09182d" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Punto Pádel" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<title>Punto Pádel</title>
+<style>
+:root{
+  --bg:#08111f;
+  --card:#10233b;
+  --line:#3d5f84;
+  --soft:#c9ddf0;
+  --muted:#9eb5ca;
+  --blue:#258ffa;
+  --blue-dark:#1455a0;
+  --red:#ef455d;
+  --red-dark:#9a1f36;
+  --green:#70ff43;
+  --fuchsia:#ff1ccf;
+  --cyan:#c7fbff;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  color:#f4f9ff;
+  background:radial-gradient(ellipse at top,#173254 0%,#09182d 58%,#07111d 100%);
+  min-height:100vh;
+}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+button:disabled{opacity:.45;cursor:not-allowed}
+.shell{max-width:860px;margin:auto;padding:16px 14px 34px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-size:22px;font-weight:950;letter-spacing:-.6px}
+.logo b{color:#79c4ff}
+.pill{padding:6px 11px;border-radius:999px;background:#1f3550;border:1px solid #44688d;color:#d8ecff;font-size:12px}
+.nav{display:flex;gap:8px;margin:18px 0 14px;overflow:auto}
+.tab{border-radius:12px;padding:10px 14px;background:#1a2c41;border:1px solid #35516f;color:#d2e3f5;font-weight:700;white-space:nowrap}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.page{display:none}
+.page.active{display:block}
+.card{background:rgba(16,35,59,.94);border:1px solid #385a7d;border-radius:22px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.eyebrow{text-transform:uppercase;letter-spacing:1px;font-size:11px;font-weight:900;color:#8ec8ff}
+.title{font-size:24px;font-weight:950;margin-top:2px}
+.tag{border-radius:999px;background:#2b4561;color:#e5f2ff;padding:8px 12px;font-size:12px;font-weight:800}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.official{border:1px solid #57779a;border-radius:18px;overflow:hidden;background:#071321;margin-bottom:14px}
+.officialheading{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#1a334c;color:#d4e9fb;font-size:12px;font-weight:950;letter-spacing:.8px}
+#columns{display:flex;gap:16px}
+.officialrow{display:grid;grid-template-columns:minmax(0,1fr) repeat(4,36px);gap:6px;align-items:center;padding:10px 8px;border-top:1px solid #30465c}
+.officialname{font-size:12px;font-weight:900;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.officialname small{display:block;margin-top:4px;font-size:10px;color:#fff;font-weight:850;white-space:normal}
+.officialnum,.officialpts{background:#213850;border-radius:8px;padding:8px 0;text-align:center;font-size:19px;font-weight:950}
+.officialnum.current{color:#90cdff}
+.officialpts{color:#fff}
+.officialrow:first-child .officialpts{background:#15519a}
+.officialrow:nth-child(2) .officialpts{background:#ab2c48}
+.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.team{border-radius:24px;padding:14px 12px 12px;background:linear-gradient(180deg,#1f6fbf,#174d84);border:1px solid rgba(255,255,255,.16);text-align:center}
+.team.b{background:linear-gradient(180deg,#bb4355,#7d2431)}
+.team.active-serve{outline:5px solid rgba(255,255,255,.96);box-shadow:0 0 0 2px rgba(255,255,255,.18)}
+.teamname{font-size:15px;font-weight:950;min-height:24px;overflow-wrap:anywhere}
+.serving{min-height:74px;display:flex;align-items:center;justify-content:center;margin-top:8px}
+.serve-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.serve-head{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:900;color:#fff;text-transform:uppercase}
+.serve-name{color:#fff}
+.fuchsia-dot{width:14px;height:14px;border-radius:50%;background:#ff4fe0;border:2px solid #fff;flex:0 0 14px}
+.padel-icon{display:inline-flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 7px rgba(255,255,255,.35))}
+.padel-icon svg{display:block;width:18px;height:18px}
+.serve-from{font-size:16px;font-weight:900;color:#f6fcff}
+.point{font-size:clamp(66px,14vw,94px);line-height:1;font-weight:1000;color:#fff;font-variant-numeric:tabular-nums;margin:8px 0 6px}
+.point.last-win{color:#79ff54}
+.award{width:100%;margin-top:12px;padding:19px 8px;border-radius:18px;font-size:21px;font-weight:1000;color:#fff;background:var(--blue);box-shadow:0 6px 0 var(--blue-dark)}.award-wrap{margin-top:12px}.award-advanced{display:grid;grid-template-columns:1fr 1fr;gap:6px}.award-advanced[hidden]{display:none}.adv-btn{min-height:60px;padding:8px 6px;border-radius:16px;border:2px solid rgba(255,255,255,.96);background:rgba(7,17,29,.18);color:#fff;font-size:12px;font-weight:900;line-height:1.15}.team.b .adv-btn{background:#ef455d}.team:not(.b) .adv-btn{background:#258ffa}
+.team.b .award{background:var(--red);box-shadow:0 6px 0 var(--red-dark)}
+.award:active{transform:translateY(4px);box-shadow:none}
+.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.check{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#eef6ff}
+.check input{width:22px;height:22px;accent-color:var(--blue)}
+.small{font-size:12px;color:var(--muted)}
+.hint{font-size:13px;color:#c0d3e6;line-height:1.5}
+.advanced-panel{margin-top:10px;border:1px solid #446d96;border-radius:16px;background:#0b1f36;padding:10px}
+.advanced-panel[hidden]{display:none}
+.advanced-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.advanced-title{font-size:12px;font-weight:950;letter-spacing:.8px;color:#90c7ff;text-transform:uppercase}
+.advanced-team{font-size:12px;font-weight:800;color:#fff}
+.advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.advanced-button{padding:12px 8px;border-radius:12px;border:1px solid #557ca3;background:#163556;color:#fff;font-size:13px;font-weight:850}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.secondary,.primary,.danger{border-radius:14px;padding:14px 10px;font-weight:900}
+.secondary{background:#20384f;border:1px solid #496888;color:#eef6ff}
+.primary{background:var(--blue);color:#fff}
+.danger{background:#60304a;color:#fff}
+.line{height:1px;background:#355069;margin:14px 0}.audio-indicator{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:12px;background:#152b44;border:1px solid #3b6288;font-size:13px;font-weight:900;color:#eef7ff}.audio-indicator.off{background:#2c2030;border-color:#6b506d;color:#f7ecff}.speaker-ic{font-size:16px}
+.scoreline{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.labelbox{font-size:13px;font-weight:900;color:#f3f9ff}
+.timer{font-variant-numeric:tabular-nums}
+.winner{margin-top:12px;border-radius:14px;padding:12px;background:#16345b;border:1px solid #4f9ef8;font-weight:900}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.config-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}.config-block{border-radius:18px;padding:14px;border:1px solid #446686;background:#12263e}.config-block h3{margin:0 0 10px;font-size:16px}.config-block.blue{background:linear-gradient(180deg,#14365a,#10253d);border-color:#4f92d0}.config-block.red{background:linear-gradient(180deg,#4b2030,#351520);border-color:#bd6470}.config-block.neutral{background:linear-gradient(180deg,#1a2f48,#12263d);border-color:#4f6f94}.config-block .mini-title{font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#d7ebff;margin-bottom:10px}.config-block.full{grid-column:1/-1}
+.field label{display:block;margin:0 0 6px;color:#d7e8f7;font-size:12px;font-weight:800}
+input,select{width:100%;padding:13px 11px;border-radius:12px;border:1px solid #415f80;background:#0c1d2f;color:#fff;outline:none}
+input:focus,select:focus{border-color:#84c7ff}
+.full{grid-column:1/-1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{padding:14px;border-radius:14px;background:#20364d;text-align:center}
+.stat b{display:block;font-size:28px;color:#7cc5ff}
+.stat small{color:#b7cadb}
+.history{display:flex;flex-direction:column;gap:10px}
+.entry{background:#20364d;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.entry strong{display:block}
+.entry small{display:block;color:#bfd0df;margin-top:4px;line-height:1.45}
+.empty{padding:22px 0;text-align:center;color:#a7bfd4}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:none;background:#7cc5ff;color:#06203d;padding:12px 18px;border-radius:14px;font-weight:900;box-shadow:0 12px 40px rgba(0,0,0,.32);z-index:50}
+.footer{padding:16px;text-align:center;font-size:11px;color:#7e96ab}
+#voice-status{overflow-wrap:anywhere}
+
+@media (max-width:410px){
+  .shell{padding:12px 10px 28px}
+  .card{padding:14px}
+  .title{font-size:22px}
+  .award{font-size:18px}
+  .actions{grid-template-columns:1fr 1fr}
+  .formgrid{grid-template-columns:1fr}
+  .config-wrap{grid-template-columns:1fr}
+}
+@media (orientation:landscape) and (max-height:700px){
+  .shell{max-width:1120px;padding:10px 12px 24px}
+  .nav{margin:10px 0}
+  .card{padding:12px}
+  .scoregrid{gap:10px}
+  .team{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;text-align:left;padding:12px 10px}
+  .teamname{min-height:auto}
+  .serving{grid-column:1/-1;justify-content:flex-start;min-height:46px}
+  .serve-stack{align-items:flex-start}
+  .point{margin:0 8px}
+  .award{margin-top:0;padding:14px 8px}
+}
+
+/* v1.5 - mobile dashboard */
+.nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;overflow:visible;width:100%}.tab{min-width:0;padding:11px 2px;font-size:clamp(9px,2.7vw,13px);white-space:nowrap;letter-spacing:-.35px}
+.match-info{font-size:12px;color:#d4e9fb;display:flex;gap:9px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:7px}.match-info strong{color:#fff}
+.match-title-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.match-title-row .title{margin:0}.countdown{font-size:clamp(20px,6vw,32px);font-weight:1000;font-variant-numeric:tabular-nums;color:#fff;white-space:nowrap;background:#183854;border:1px solid #6791bc;border-radius:12px;padding:5px 9px}.countdown.ending{color:#ffc76a;border-color:#f9b057}.countdown.expired{color:#fff;background:#a4243f;border-color:#ff7a89}
+.point{font-size:clamp(91px,22vw,150px);letter-spacing:-3px;line-height:1.02;margin:15px 0;overflow:visible}.teamname{font-size:clamp(13px,3.3vw,20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:auto}.officialname{white-space:normal;text-overflow:clip;overflow:visible;line-height:1.35;font-size:clamp(11px,2.8vw,15px)}.officialname .playerline{display:block;overflow-wrap:anywhere}.officialname .server-mini{display:block;padding-top:4px}.officialheading{gap:5px}.officialheading #columns{gap:5px;min-width:0}.officialheading #columns span{min-width:29px;text-align:center}
+.audio-indicator{width:100%;cursor:pointer}.audio-indicator.on{border-color:#72c8ff}.audio-indicator.off{opacity:1}
+.config-venue{margin-bottom:12px}.config-venue .formgrid{grid-template-columns:1fr 1fr}.clock-field{width:100%}.section-note{font-size:12px;color:#aec7e1;margin:7px 0 10px;line-height:1.4}.tournament-team{display:grid;grid-template-columns:28px 1fr 1fr;gap:7px;align-items:center;margin:7px 0}.tournament-team span{font-size:12px;font-weight:950;color:#b9dfff}.tournament-bracket{margin-top:12px;display:grid;gap:8px}.bracket-row{background:#152e49;border:1px solid #40688e;border-radius:12px;padding:10px}.bracket-row strong{display:block;font-size:13px}.bracket-row small{display:block;color:#bfd0e2;margin:3px 0 7px}.bracket-row button{padding:8px 12px;border-radius:9px;background:#248ff4;color:#fff;font-weight:850}.bracket-row button:disabled{opacity:.45}
+@media(max-width:410px){.card{padding:11px}.shell{padding:10px 8px}.officialrow{gap:3px;padding:9px 4px}.officialnum,.officialpts{font-size:17px;padding:9px 0}.config-wrap{grid-template-columns:1fr}}
+@media(orientation:landscape) and (max-height:700px){.point{font-size:clamp(64px,14vh,125px)}.match-title-row{gap:14px}.teamname{font-size:15px}}
+
+.match-info{flex-wrap:wrap;gap:5px 8px}.match-info #match-venue{color:#fff;font-weight:950;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.countdown{font-variant-numeric:tabular-nums;white-space:nowrap;min-width:93px;text-align:right}
+.teamname{font-size:clamp(17px,4.1vw,23px);letter-spacing:-.4px}
+.point{font-size:clamp(106px,25vw,170px);line-height:1;letter-spacing:-4px}
+.champ-live{font-size:13px;background:#1c456b;border:1px solid #4888bd;color:#e9f5ff;border-radius:10px;padding:9px 12px;font-weight:900;margin-bottom:10px}
+.next-champ{width:100%;margin:12px 0 2px;font-size:17px}
+@media(max-width:410px){.match-info #match-venue{max-width:34%;font-size:10px}.point{font-size:clamp(86px,25vw,132px)}.teamname{font-size:clamp(15px,4.2vw,20px)}}
+@media(orientation:landscape) and (max-height:700px){.point{font-size:clamp(72px,17vh,145px)}}
+
+.match-elapsed{display:inline-block;font-size:clamp(13px,3.6vw,18px);font-weight:900;color:#a9d6ff;margin-left:8px;font-variant-numeric:tabular-nums}
+.finish-now{display:block;width:100%;margin-top:12px;background:#523346;color:#fff;border:1px solid #a76b86}
+
+/* Punto Pádel: ajuste real para teléfonos Android */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.shell,.page,.card,.official,.scoregrid,.team,.nav{min-width:0;max-width:100%}
+.shell{width:100%;margin:0 auto;padding:44px 10px 28px}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.logo{font-size:clamp(17px,5vw,24px);line-height:1.15;min-width:0;overflow-wrap:anywhere}
+.pill{font-size:10px;padding:5px 7px;white-space:normal;text-align:center;max-width:36%}
+.nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;overflow:visible}
+.tab{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere;font-size:clamp(9px,2.55vw,12px);padding:10px 2px;line-height:1.1}
+.card{width:100%;min-width:0;padding:12px}
+.scoregrid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;width:100%;margin:0 auto}
+.team{width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 12px;overflow:hidden}
+.teamname{font-size:clamp(17px,5vw,22px);max-width:100%;overflow-wrap:anywhere;line-height:1.2}
+.serving{min-height:56px;width:100%;justify-content:center}
+.point{font-size:clamp(90px,26vw,148px);letter-spacing:-2px;max-width:100%;margin:10px auto}
+.award-wrap,.award,.award-advanced{width:100%;min-width:0}
+.award{font-size:clamp(18px,5vw,25px);padding:17px 6px}
+.officialrow{display:grid;grid-template-columns:minmax(72px,1fr) repeat(4,minmax(0,43px));gap:4px;padding:8px 5px}
+.officialname{font-size:clamp(11px,3vw,14px);line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+.officialnum,.officialpts{font-size:clamp(15px,5vw,24px);min-width:0;padding:9px 1px;text-align:center}
+.officialheading{font-size:10px;gap:4px;padding:10px 7px}
+.match-title-row{flex-wrap:wrap}
+.match-info{overflow-wrap:anywhere}
+.config-wrap,.formgrid{min-width:0}
+@media (min-width:650px){.shell{max-width:860px;padding-top:40px}.scoregrid{grid-template-columns:repeat(2,minmax(0,1fr))}.team{min-width:0}}
+@media (orientation:landscape) and (max-height:700px){.scoregrid{grid-template-columns:repeat(2,minmax(0,1fr))}.team{display:flex;align-items:center;text-align:center}.serving{justify-content:center}}
+
+
+/* Punto Padel Beta: dos equipos lado a lado en Android, sin scroll horizontal */
+html,body{max-width:100%;overflow-x:hidden}
+.scoregrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%;max-width:100%;align-items:stretch}
+.scoregrid>.team{display:flex!important;flex-direction:column!important;justify-content:space-between!important;align-items:center!important;width:100%!important;min-width:0!important;max-width:100%!important;padding:11px 5px 9px!important;border-radius:16px!important;overflow:hidden;box-sizing:border-box;text-align:center!important}
+.teamname{width:100%;min-width:0;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;text-overflow:clip!important;font-size:clamp(12px,3.5vw,17px)!important;line-height:1.15!important;min-height:32px!important;letter-spacing:-.2px!important}
+.serving{grid-column:auto!important;justify-content:center!important;width:100%;min-height:58px!important;margin-top:3px!important;overflow-wrap:anywhere}
+.serve-stack{width:100%;align-items:center!important;gap:3px!important}
+.serve-head{gap:3px!important;flex-wrap:wrap;font-size:clamp(9px,2.55vw,12px)!important;line-height:1.1!important}
+.serve-name{overflow-wrap:anywhere}
+.serve-from{font-size:clamp(11px,3vw,14px)!important;line-height:1.15!important}
+.point{display:block!important;font-size:clamp(68px,22vw,112px)!important;line-height:1!important;letter-spacing:-2px!important;min-height:84px!important;margin:8px auto!important;max-width:100%!important;overflow:visible!important}
+.award-wrap{width:100%!important;min-width:0!important;margin-top:auto!important}
+.award{width:100%!important;min-width:0!important;margin:0!important;padding:13px 1px!important;font-size:clamp(13px,3.5vw,19px)!important;border-radius:13px!important;white-space:nowrap!important}
+.award-advanced{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;width:100%!important}
+.adv-btn{min-width:0!important;padding:7px 2px!important;min-height:49px!important;border-radius:9px!important;font-size:clamp(8px,2.4vw,11px)!important;overflow-wrap:anywhere}
+.team.active-serve{outline:2px solid #fff!important;outline-offset:-2px!important;box-shadow:none!important}
+.official{width:100%;min-width:0;overflow:hidden}
+.officialrow{grid-template-columns:minmax(0,1fr) repeat(4,minmax(0,39px))!important;gap:3px!important;padding:7px 4px!important}
+.officialname{min-width:0!important;overflow-wrap:anywhere;font-size:clamp(10px,2.8vw,13px)!important;line-height:1.2!important}
+.officialnum,.officialpts{min-width:0!important;padding:8px 0!important;font-size:clamp(14px,4.6vw,19px)!important}
+@media(max-width:355px){.scoregrid{gap:6px!important}.scoregrid>.team{padding:9px 3px!important}.point{font-size:clamp(62px,20vw,86px)!important}.teamname{font-size:12px!important}.fuchsia-dot{width:9px;height:9px}.officialrow{grid-template-columns:minmax(0,1fr) repeat(4,minmax(0,32px))!important}}
+
+
+/* Punto Pádel - diseño aprobado: dos contadores horizontales, luego sets */
+html,body{width:100%;max-width:100%;overflow-x:hidden!important}
+*,*::before,*::after{box-sizing:border-box}
+.shell{max-width:720px!important;width:100%;padding:16px 10px 25px!important;overflow-x:clip}
+.top{gap:8px;min-height:60px}.logo{font-size:clamp(20px,6vw,31px)!important;line-height:1.07}.pill{font-size:clamp(9px,2.8vw,12px)!important;max-width:38%;text-align:center}
+.card{padding:10px!important;overflow:hidden}
+.match-title-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
+.match-title-row .title{font-size:clamp(16px,4.4vw,23px)!important;line-height:1.1}
+.match-elapsed{display:block;margin:5px 0 0!important;font-size:clamp(12px,3vw,15px)!important}
+.countdown{font-size:clamp(20px,6.4vw,31px)!important;color:#ff5b73!important;border-color:#aa4166!important;background:#20273f!important;padding:8px 6px!important}
+.countdown::before{content:'TURNO';font-size:10px;display:block;text-align:center;color:#d5e5f6;letter-spacing:1px}
+.match-info{font-size:clamp(9px,2.7vw,12px)!important;gap:4px 7px!important}
+.meta{display:flex!important;gap:5px!important;flex-wrap:wrap;margin:9px 0!important}.tag{padding:5px 7px!important;font-size:clamp(9px,2.6vw,11px)!important}
+.scoregrid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;width:100%!important;gap:7px!important;align-items:stretch}
+.scoregrid>.team{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:space-between!important;min-width:0!important;width:100%!important;padding:10px 5px!important;border-radius:15px!important;overflow:hidden!important}
+.teamname{font-size:clamp(12px,3.35vw,18px)!important;font-weight:950!important;line-height:1.1!important;min-height:32px!important;white-space:normal!important;overflow-wrap:anywhere!important;text-overflow:clip!important;margin-bottom:2px}
+.serving{min-height:46px!important;max-height:68px;margin:4px 0 0!important;grid-column:auto!important;width:100%!important;overflow:visible}
+.serve-head{font-size:clamp(9px,2.6vw,12px)!important;gap:4px!important;flex-wrap:wrap!important;line-height:1.1!important}
+.serve-stack{gap:2px!important}.serve-from{font-size:clamp(11px,3vw,14px)!important}
+.fuchsia-dot{width:10px!important;height:10px!important;flex-basis:10px!important;border-width:1px!important}
+.padel-icon svg{width:13px!important;height:13px!important}
+.point{font-size:clamp(78px,24vw,140px)!important;line-height:1!important;margin:10px 0 12px!important;min-height:87px!important;max-width:100%!important;letter-spacing:-2px!important;font-variant-numeric:tabular-nums!important;overflow:visible!important}
+.award-wrap{width:100%!important;min-width:0!important;margin-top:auto!important}.award{width:100%!important;min-width:0!important;padding:13px 1px!important;margin:0!important;border-radius:12px!important;font-size:clamp(14px,3.6vw,19px)!important;white-space:nowrap}
+.award-advanced{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important}.adv-btn{font-size:clamp(8px,2.3vw,11px)!important;padding:6px 2px!important;min-height:48px!important;border-radius:8px!important}
+.official{margin-top:10px!important;margin-bottom:10px!important;border-radius:12px!important;overflow:hidden;width:100%!important}.officialheading{padding:8px 7px!important;font-size:clamp(9px,2.7vw,12px)!important;gap:4px!important}.officialheading #columns{font-size:clamp(9px,2.8vw,12px)!important;gap:3px!important}
+.officialrow{display:grid!important;grid-template-columns:minmax(0,1fr) repeat(4,minmax(0,36px))!important;gap:3px!important;padding:5px 4px!important;min-width:0!important}
+.officialname{font-size:clamp(10px,2.7vw,13px)!important;line-height:1.14!important;min-width:0!important;overflow-wrap:anywhere!important}
+.officialnum,.officialpts{font-size:clamp(13px,4.1vw,20px)!important;padding:8px 0!important;min-width:0!important;border-radius:5px!important}
+@media(max-width:370px){.shell{padding:14px 6px 24px!important}.card{padding:7px!important}.scoregrid{gap:5px!important}.scoregrid>.team{padding:9px 3px!important}.point{font-size:clamp(72px,23vw,102px)!important}.award{font-size:13px!important}.officialrow{grid-template-columns:minmax(0,1fr) repeat(4,30px)!important;gap:2px!important}}
+@media(orientation:landscape) and (max-height:700px){.scoregrid>.team{display:flex!important;flex-direction:column!important}.scoregrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+
+/* Ajustes finales 2026-10-11: una línea y tanteos adaptables */
+.nav .tab{white-space:nowrap!important;overflow:hidden!important;text-overflow:clip!important;overflow-wrap:normal!important;word-break:normal!important;letter-spacing:-.55px!important;font-size:clamp(9px,2.75vw,13px)!important;padding-left:0!important;padding-right:0!important}
+.nav .tab[data-page="config"]{font-size:clamp(8px,2.33vw,12px)!important;letter-spacing:-.65px!important}
+.point{max-width:100%!important;white-space:nowrap!important;text-align:center!important;letter-spacing:-2px!important;overflow:hidden!important}
+.point.point-ad{font-size:clamp(54px,17vw,94px)!important;letter-spacing:-1px!important;line-height:1.05!important}
+.point.point-numeric{font-size:clamp(68px,19vw,116px)!important;letter-spacing:-3px!important}
+.officialpts{white-space:nowrap!important;letter-spacing:-.5px!important}
+.officialpts.official-ad{font-size:clamp(11px,3.1vw,16px)!important;letter-spacing:-.5px!important}
+@media(max-width:370px){.point.point-ad{font-size:clamp(43px,16vw,63px)!important}.point.point-numeric{font-size:clamp(60px,18vw,77px)!important}}
+
+.serve-pick{display:block;width:100%;margin:6px 0;padding:10px 3px;border:1px solid #e5eafc;border-radius:9px;background:#273b7b;color:#fff;font-weight:800;font-size:clamp(11px,2.7vw,15px)}
+.team.b .serve-pick{background:#9b273c}
+.serve-pick[hidden]{display:none!important}
+
+/* Candidata 04: controles compactos, accesibles e independientes */
+.quick-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 7px}
+.quick-switch{display:flex;align-items:center;gap:7px;min-width:0;width:100%;padding:12px 9px;border-radius:13px;border:1px solid #42698e;background:#18324d;color:#f5faff;text-align:left;cursor:pointer;min-height:70px}
+.quick-switch[aria-pressed="true"]{border-color:#42bdad;background:#173f4a}
+.quick-icon{font-size:19px;flex:none}
+.quick-body{display:flex;min-width:0;flex:1;flex-direction:column;gap:3px;line-height:1.15}
+.quick-body strong{font-size:clamp(11px,3vw,15px);overflow-wrap:anywhere}
+.quick-body small{font-size:clamp(9px,2.45vw,12px);color:#b9cde3}
+.switch-track{display:flex;align-items:center;flex:none;width:29px;height:18px;padding:2px;background:#627288;border-radius:16px;transition:background .2s}
+.switch-dot{width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
+.quick-switch[aria-pressed="true"] .switch-track{background:#19b99a}
+.quick-switch[aria-pressed="true"] .switch-dot{transform:translateX(11px)}
+.quick-detail{grid-column:1/-1;font-size:11px;color:#a9bed5;line-height:1.35;padding:2px 4px;min-height:14px;overflow-wrap:anywhere}
+.advanced-control{margin:10px 0 10px;min-height:58px}
+.finish-now{display:block;width:100%;max-width:100%;margin:16px 0 4px;padding:13px 10px;border:1px solid #e57c85;background:#852c3f;color:#fff;border-radius:12px;font-size:clamp(15px,4vw,19px);font-weight:850;cursor:pointer}
+.finish-now[hidden]{display:none!important}
+@media(max-width:350px){.quick-controls{gap:5px}.quick-switch{padding:9px 5px;gap:4px}.switch-track{width:25px}.switch-dot{width:12px;height:12px}.quick-switch[aria-pressed="true"] .switch-dot{transform:translateX(9px)}}
+
+/* Candidata Visual 01 — Estilo premium para PARTIDO; no altera la lógica */
+body{background:#04101f!important;background-image:radial-gradient(ellipse 92% 25% at 5% 5%,rgba(30,133,255,.25),transparent 70%),radial-gradient(ellipse 80% 28% at 100% 16%,rgba(239,46,89,.2),transparent 73%),linear-gradient(180deg,#091a35 0%,#050e1d 54%,#04111f 100%)!important}
+#match{position:relative;isolation:isolate}
+#match::before{content:'';position:absolute;inset:0 0 auto;height:345px;z-index:-1;pointer-events:none;opacity:.62;background:repeating-linear-gradient(112deg,transparent 0 38px,rgba(98,170,250,.055) 39px 40px,transparent 41px 82px),radial-gradient(ellipse at 17% 5%,rgba(74,171,255,.25),transparent 52%),radial-gradient(ellipse at 88% 5%,rgba(255,75,111,.2),transparent 48%)}
+.top{justify-content:center!important;padding:8px 0 13px!important;min-height:75px!important}
+.logo{font-size:clamp(26px,7vw,38px)!important;font-weight:1000!important;letter-spacing:-1.4px;text-shadow:0 2px 17px rgba(53,167,255,.65),0 3px 3px #020913;text-align:center}
+.logo b{color:#99d8ff!important;text-shadow:0 0 14px #198afc}
+.nav{border:1px solid rgba(111,163,228,.32);border-radius:16px;padding:4px;background:rgba(10,24,45,.78);box-shadow:0 8px 20px rgba(0,0,0,.22);margin:3px 0 13px!important}
+.nav .tab{background:transparent;border:0;border-radius:12px;color:#abc5e0!important;min-height:38px}
+.nav .tab.active{background:linear-gradient(180deg,#2789e9,#1553a0)!important;color:white!important;box-shadow:inset 0 1px 0 #83c9ff,0 2px 12px #005db655}
+#match>.card{background:linear-gradient(170deg,rgba(12,31,56,.93),rgba(6,17,34,.96))!important;border:1px solid #385f91!important;border-radius:23px!important;box-shadow:0 12px 35px #010818bb,inset 0 1px 0 #5682b055!important}
+#match>.card>.row{margin-bottom:7px!important}
+#match>.card>.row>div{min-width:0;width:100%}
+.match-info{justify-content:center!important;gap:6px!important;opacity:.85;text-align:center;font-size:clamp(9px,2.6vw,12px)!important;letter-spacing:.2px}
+.match-title-row{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin-top:9px!important;align-items:stretch!important}
+.match-title-row .title{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;background:linear-gradient(180deg,#102f55,#06172f)!important;border:1px solid #3989d9!important;border-radius:16px!important;min-height:86px!important;padding:9px 3px!important;font-size:0!important;box-shadow:inset 0 2px 0 #5bb5ff66,0 0 21px #136bc73d!important}
+.match-title-row .title::before{content:'TIEMPO PARTIDO';font-size:clamp(9px,2.5vw,12px)!important;color:#94d4ff;letter-spacing:1px;font-weight:950}
+.match-elapsed{font-size:clamp(21px,6vw,36px)!important;letter-spacing:-1px!important;color:#edfaff!important;text-shadow:0 0 14px #53aaff!important;margin:0!important;font-weight:1000!important}
+.countdown{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:5px!important;margin:0!important;background:linear-gradient(180deg,#422036,#1c152d)!important;color:#ff687c!important;border:1px solid #d24d73!important;border-radius:16px!important;padding:8px 3px!important;min-height:86px!important;font-size:clamp(22px,6.6vw,39px)!important;line-height:1.15!important;letter-spacing:-.8px!important;text-shadow:0 0 15px #fc3c6b99!important;box-shadow:inset 0 2px 0 #ff859e44,0 0 17px #df2e5c33!important}
+.countdown::before{content:'TIEMPO TURNO'!important;font-size:clamp(9px,2.5vw,12px)!important;color:#ffb7c4!important;letter-spacing:1px!important;text-shadow:none!important}
+#match .meta{justify-content:center;margin:10px 0 12px!important}
+#match .meta .tag{border:1px solid #3e6692!important;background:#112947!important;border-radius:7px!important;letter-spacing:.6px!important;color:#c2e4ff!important}
+.scoregrid{gap:8px!important}
+.scoregrid>.team{border-radius:19px!important;padding:12px 5px 11px!important;box-shadow:inset 0 2px 0 #a1dfff77,0 8px 17px #0009,0 0 18px #0077ff40!important;background:linear-gradient(145deg,#237acf 0%,#114d92 37%,#062a62 100%)!important;border:1px solid #55c1ff!important}
+.scoregrid>.team.b{background:linear-gradient(145deg,#eb5474 0%,#a42249 44%,#541332 100%)!important;border-color:#ff718b!important;box-shadow:inset 0 2px 0 #ffbecb88,0 8px 17px #0009,0 0 18px #fb326145!important}
+.teamname{color:#fff!important;text-shadow:0 2px 3px #0008;font-weight:1000!important;letter-spacing:.1px!important}
+.scoregrid .point{font-weight:1000!important;color:#fff!important;text-shadow:0 4px 2px #001226aa,0 0 20px #b3e6ff50;filter:drop-shadow(0 0 1px #fff);min-height:83px!important}
+.scoregrid .point.last-win{color:#9dff80!important;text-shadow:0 0 17px #75ff57aa!important}
+.scoregrid>.team .serving{background:#04183055!important;border:1px solid #ffffff20!important;border-radius:9px!important;min-height:53px!important;padding:4px 0!important}
+.scoregrid>.team.active-serve{outline:2px solid #eafaff!important;outline-offset:-3px!important}
+.scoregrid .award{background:linear-gradient(180deg,#48baff,#0c65c7)!important;box-shadow:inset 0 1px 0 #d9f4ff99,0 5px 0 #064788,0 7px 13px #0007!important;border:1px solid #82d4ff!important;font-weight:1000!important}
+.scoregrid .team.b .award{background:linear-gradient(180deg,#ff778a,#df2d58)!important;box-shadow:inset 0 1px 0 #ffe2e899,0 5px 0 #861331,0 7px 13px #0007!important;border-color:#ffb2c0!important}
+.serve-pick{border-radius:11px!important;border:1px solid #fff9!important;box-shadow:0 3px 8px #0007!important}
+#match .official{border-radius:16px!important;border:1px solid #587faf!important;background:#061428!important;box-shadow:0 4px 15px #010a19aa!important;margin-top:17px!important}
+#match .officialheading{background:linear-gradient(90deg,#1f4974,#132b4c)!important;color:#cfeaff!important;letter-spacing:1.1px!important}
+#match .officialrow{border-top-color:#254262!important}
+#match .officialrow:first-child .officialpts{background:#146dbb!important}
+#match .officialrow:nth-child(2) .officialpts{background:#b02b50!important}
+#match .officialnum{background:#1a314d!important;border:1px solid #47648166!important}
+#match .quick-switch{border-radius:14px!important;background:linear-gradient(180deg,#1a3859,#0c253f)!important;border-color:#4b759f!important;box-shadow:inset 0 1px 0 #82a9cb3d}
+#match .quick-switch[aria-pressed=true]{background:linear-gradient(180deg,#164e5b,#103a47)!important;border-color:#34c2aa!important}
+#match .finish-now{background:linear-gradient(180deg,#a83852,#75263e)!important;border-color:#f4778c!important}
+#match .secondary{background:linear-gradient(180deg,#264c72,#122e4e)!important;border:1px solid #527dab!important}
+@media(max-width:355px){.match-title-row{gap:5px!important}.countdown,.match-title-row .title{min-height:76px!important}.match-elapsed{font-size:21px!important}.countdown{font-size:22px!important}}
+
+</style>
+<style>
+#pp-splash{position:fixed;inset:0;z-index:9999;background:#041330 url("splash.webp") center center/cover no-repeat;animation:ppHide .4s ease-in 1.9s forwards;pointer-events:none}
+@keyframes ppHide{to{opacity:0;visibility:hidden}}
+</style></head>
+<body><div id="pp-splash" aria-hidden="true"></div>
+<main class="shell">
+  <header class="top">
+    <div class="logo">🎾 PUNTO <b>PÁDEL</b></div>
+  </header>
+
+  <nav class="nav">
+    <button class="tab active" data-page="match">Partido</button>
+    <button class="tab" data-page="config">Configuración</button>
+    <button class="tab" data-page="stats">Estadísticas</button>
+    <button class="tab" data-page="history">Historial</button>
+  </nav>
+
+  <section id="match" class="page active">
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="match-info"><span id="phase">PARTIDO EN CURSO</span><strong id="match-venue"></strong><strong id="match-date">--/--/----</strong><strong id="match-start">--:--</strong></div>
+          <div class="match-title-row"><div class="title">Partido <span class="match-elapsed" id="match-elapsed">00:00:00</span></div><span class="countdown" id="countdown">--:--</span></div>
+        </div>
+
+      </div>
+
+      <div id="champ-live" class="champ-live" hidden></div>
+      <div class="meta">
+        <span class="tag" id="setinfo">SET 1</span>
+        <span class="tag" id="modeinfo">CON VENTAJA</span>
+        <span class="tag" id="tbinfo">GAME 1</span>
+      </div>
+
+      <div class="scoregrid">
+        <div class="team" id="team0card">
+          <div class="teamname" id="name0">Jugador 1 / Jugador 2</div>
+          <div class="serving" id="serve0"></div><button class="serve-pick" id="pick0" type="button">🎾 Elegir saque</button>
+          <div class="point" id="point0">0</div>
+          <div class="award-wrap"><button class="award" id="award0">+ PUNTO</button><div class="award-advanced" id="adv0" hidden><button class="adv-btn" data-team="0" data-kind="Punto">Punto ganador</button><button class="adv-btn" data-team="0" data-kind="Falta">Falta</button><button class="adv-btn" data-team="0" data-kind="Error forzado">Error forzado</button><button class="adv-btn" data-team="0" data-kind="Error no forzado">Error no forzado</button></div></div>
+        </div>
+        <div class="team b" id="team1card">
+          <div class="teamname" id="name1">Jugador 1 / Jugador 2</div>
+          <div class="serving" id="serve1"></div><button class="serve-pick" id="pick1" type="button">🎾 Elegir saque</button>
+          <div class="point" id="point1">0</div>
+          <div class="award-wrap"><button class="award" id="award1">+ PUNTO</button><div class="award-advanced" id="adv1" hidden><button class="adv-btn" data-team="1" data-kind="Punto">Punto ganador</button><button class="adv-btn" data-team="1" data-kind="Falta">Falta</button><button class="adv-btn" data-team="1" data-kind="Error forzado">Error forzado</button><button class="adv-btn" data-team="1" data-kind="Error no forzado">Error no forzado</button></div></div>
+        </div>
+      </div>
+      <div class="official">
+        <div class="officialheading">
+          <span>MARCADOR OFICIAL</span>
+          <span id="columns">S1 S2 S3 PTS</span>
+        </div>
+        <div id="officialrows"></div>
+      </div>
+
+
+
+      <div class="quick-controls" aria-label="Controles rápidos del partido">
+        <button type="button" class="quick-switch" id="voice-command" aria-pressed="false"><span class="quick-icon">🎙️</span><span class="quick-body"><strong>Comandos de voz</strong><small id="voice-switch-status">Desactivados</small></span><span class="switch-track" aria-hidden="true"><span class="switch-dot"></span></span></button>
+        <button type="button" class="quick-switch" id="audio-indicator" aria-pressed="false"><span class="quick-icon" id="speaker-icon">🔊</span><span class="quick-body"><strong>Audio de puntos</strong><small id="audio-switch-status">Desactivado</small></span><span class="switch-track" aria-hidden="true"><span class="switch-dot"></span></span></button>
+        <div class="quick-detail" id="command-status" aria-live="polite">Decí «Punto para» y el nombre. Los botones + PUNTO siempre funcionan.</div>
+      </div>
+      <button type="button" class="quick-switch advanced-control" id="advanced-button" aria-pressed="false" aria-expanded="false"><span class="quick-icon">📊</span><span class="quick-body"><strong>Puntuación avanzada</strong><small id="advanced-switch-status">Desactivada · Registrar tipo de punto</small></span><span class="switch-track" aria-hidden="true"><span class="switch-dot"></span></span></button>
+      <input type="checkbox" id="advanced-toggle" hidden aria-hidden="true">
+      <div id="winner"></div><button id="next-champ" class="primary next-champ" type="button" hidden>Próximo partido →</button>
+      <button id="finish-now" class="finish-now" type="button">■ Terminar partido</button>
+
+      <div class="hint" id="last-announcement" style="margin-top:12px" aria-live="polite">Tocá un punto para registrar y anunciar el marcador.</div>
+      <div class="hint" id="voice-status" style="margin-top:5px" aria-live="polite">🔊 Probá el sonido con «Probar voz».</div>
+
+      <div class="actions">
+        <button class="secondary" id="undo">↶ Deshacer</button>
+        <button class="secondary" id="switch">↔ Ver lado</button>
+        <button class="secondary" id="announce">🔊 Probar voz</button>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="scoreline">
+        <div>
+          <div class="labelbox" id="serve-desc">Indicador de saque</div>
+          <div class="hint" id="side-desc">Saque desde derecha al iniciar el game; alterna en cada punto.</div>
+        </div>
+        <div class="small" id="game-duration"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="config" class="page">
+    <div class="card">
+      <div class="eyebrow">Configuración del partido</div>
+      <div class="title">Jugadores y reglas</div>
+      <div class="config-block neutral config-venue"><div class="mini-title">Cancha y turno</div><div class="formgrid">
+<div class="field full"><label for="venue">Nombre de la cancha o club</label><input id="venue" placeholder="Villa Allegra" /></div>
+<div class="field"><label for="slot-start">Inicio del turno</label><input type="text" id="slot-start" value="" inputmode="numeric" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" maxlength="5" placeholder="22:00" /></div>
+<div class="field"><label for="slot-end">Fin del turno</label><input type="text" id="slot-end" value="" inputmode="numeric" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" maxlength="5" placeholder="23:30" /></div>
+</div><div class="section-note">Ejemplo: 22:00 a 23:30 = 90 minutos. Si el fin es anterior al inicio, se considera el día siguiente.</div></div>
+<div class="config-wrap">
+        <div class="config-block blue">
+          <div class="mini-title">Equipo azul</div>
+          <div class="formgrid">
+            <div class="field"><label for="a1">Jugador 1</label><input id="a1" /></div>
+            <div class="field"><label for="a2">Jugador 2</label><input id="a2" /></div>
+          </div>
+        </div>
+        <div class="config-block red">
+          <div class="mini-title">Equipo rojo</div>
+          <div class="formgrid">
+            <div class="field"><label for="b1">Jugador 1</label><input id="b1" /></div>
+            <div class="field"><label for="b2">Jugador 2</label><input id="b2" /></div>
+          </div>
+        </div>
+        <div class="config-block neutral full">
+          <div class="mini-title">Reglas y opciones</div>
+          <div class="formgrid">
+            <div class="field"><label for="best">Partido</label><select id="best"><option value="3">Mejor de 3 sets</option><option value="5">Mejor de 5 sets</option></select></div>
+            <div class="field"><label for="deuce">Puntuación</label><select id="deuce"><option value="adv">Con ventaja</option><option value="gold">Punto de oro</option></select></div>
+            <div class="field"><label for="tiebreak">Tie-break</label><select id="tiebreak"><option value="7">A 7 puntos</option><option value="10">Super tie-break a 10</option></select></div>
+            <div class="field"><label for="first">Primer sacador</label><select id="first"><option value="1">Azul J1</option><option value="2">Azul J2</option><option value="3">Rojo J1</option><option value="4">Rojo J2</option></select></div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" id="sound"> Activar anuncios de voz</label>
+            </div>
+            <div class="field"><label for="voice-language">Idioma de la voz</label><select id="voice-language"><option value="es">Español (Argentina / Latinoamérica)</option><option value="en">Inglés</option><option value="it">Italiano</option><option value="fr">Francés</option><option value="de">Alemán</option></select></div>
+            <div class="field"><label for="voice-gender">Tipo de voz</label><select id="voice-gender"><option value="auto">Automática</option><option value="female">Mujer (si disponible)</option><option value="male">Hombre (si disponible)</option></select></div>
+            <div class="field full">
+              <label for="voice-choice">Voz preferida</label>
+              <select id="voice-choice"><option value="auto">Automático (español)</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="config-block neutral full" style="margin-top:14px"><label class="check"><input type="checkbox" id="championship"> Torneo (eliminación directa)</label>
+<div id="championship-options" hidden><p class="section-note">Configurá de 3 a 10 parejas. El cuadro crea pases automáticos de ronda cuando hace falta.</p>
+<div class="field"><label for="champ-count">Cantidad de equipos</label><select id="champ-count"></select></div>
+<div id="champ-teams"></div><button class="secondary" id="champ-create" type="button">Crear cuadro de torneo</button>
+<div class="tournament-bracket" id="champ-bracket"></div></div></div>
+      <div class="actions">
+        <button class="primary" id="new">Guardar e iniciar partido</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="stats" class="page">
+    <div class="card">
+      <div class="eyebrow">Resumen en vivo</div>
+      <div class="title">Estadísticas</div>
+      <div class="stats" id="statslist"></div>
+      <div class="line"></div>
+      <div id="events"></div>
+    </div>
+  </section>
+
+  <section id="history" class="page">
+    <div class="card">
+      <div class="eyebrow">Guardado local</div>
+      <div class="title">Historial de partidos</div>
+      <div class="actions" style="margin-bottom:12px">
+        <button class="secondary" id="export">Exportar JSON</button>
+      </div>
+      <div class="history" id="historylist"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="footer">Punto Pádel · Versión web para iPhone · Creado por Daniel Corral</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function adaptOfficialAdvantage(){document.querySelectorAll('.officialpts').forEach(el=>el.classList.toggle('official-ad',el.textContent.trim()==='AD'));}
+const officialObserver=new MutationObserver(adaptOfficialAdvantage);
+window.addEventListener('DOMContentLoaded',()=>{const o=document.querySelector('.official');if(o)officialObserver.observe(o,{childList:true,subtree:true,characterData:true});adaptOfficialAdvantage();});
+const defaults = {a1:'Jugador 1',a2:'Jugador 2',b1:'Jugador 1',b2:'Jugador 2',best:3,deuce:'adv',tiebreak:7,first:1,sound:false,venue:'',slotStart:'',slotEnd:''};
+const STORE = 'padel-score-pro-v14';
+let voiceCommandsOn=false;
+
+
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function now(){return Date.now();}
+function formatTime(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  const h=String(Math.floor(s/3600)).padStart(2,'0');
+  const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const sec=String(s%60).padStart(2,'0');
+  return `${h}:${m}:${sec}`;
+}
+function makeMatch(cfg={}){
+  const c={...defaults,...cfg};
+  return {
+    cfg:c,
+    created:null,
+    turnStartAt:null,turnEndAt:null,alarmPlayed:false,
+    points:[0,0],
+    games:[0,0],
+    sets:[],
+    tb:false,
+    tbPoints:0,
+    tbStartServer:null,
+    side:0,
+    gameIndex:0,
+    server:(+c.first)-1,
+    total:[0,0],
+    gamesWon:[0,0],
+    pointTypes:[{0:0,1:0},{0:0,1:0},{0:0,1:0},{0:0,1:0}],
+    lastWinner:null,
+    finished:null,
+    advanced:false,
+    advancedTeam:null,
+    events:[],
+    undo:[]
+  };
+}
+function event(text){m.events.unshift({text,at:now()});m.events=m.events.slice(0,80);}
+function save(){data.championship=championship;data.turn=turn;try{localStorage.setItem(STORE,JSON.stringify(data));}catch(e){console.warn('Storage unavailable',e);}}
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE);
+    if(!raw) return {current:makeMatch(),history:[]};
+    const d=JSON.parse(raw);
+    if(!d.current) d.current=makeMatch();
+    if(!Array.isArray(d.history)) d.history=[];
+    d.current.cfg={...defaults,...(d.current.cfg||{})};
+    if(typeof d.current.advanced!=='boolean') d.current.advanced=false;
+    if(d.current.advancedTeam===undefined) d.current.advancedTeam=null;
+    if(d.current.lastWinner===undefined) d.current.lastWinner=null;
+    if(!d.current.undo) d.current.undo=[];
+    if(!d.current.events) d.current.events=[];
+    if(!d.current.gamesWon) d.current.gamesWon=[0,0];
+    if(!d.current.pointTypes) d.current.pointTypes=[{0:0,1:0},{0:0,1:0},{0:0,1:0},{0:0,1:0}];
+    return d;
+  }catch(e){
+    return {current:makeMatch(),history:[]};
+  }
+}
+let data = load();
+// Al abrir la app: marcador limpio; partidos anteriores pasan al historial.
+const previousMatch=data.current;
+if(previousMatch && ((previousMatch.total?.[0]||0)+(previousMatch.total?.[1]||0)>0 || previousMatch.sets?.length)){
+ const alreadySaved=data.history.some(h=>h.created===previousMatch.created);
+ if(!alreadySaved){const archived=clone(previousMatch);archived.archivedAt=now();data.history.unshift(archived);data.history=data.history.slice(0,120);}
+}
+let m=makeMatch(defaults);
+m.created=null; // el cronómetro no se activa hasta iniciar un partido
+data.current=m;
+let championship = null; // el modo torneo siempre se inicia destildado
+let turn=null; // los relojes no se reanudan automáticamente al abrir
+let audioContext=null;
+
+function teamName(t){return t===0?`${m.cfg.a1}/${m.cfg.a2}`:`${m.cfg.b1}/${m.cfg.b2}`;}
+function playerName(i){return [m.cfg.a1,m.cfg.a2,m.cfg.b1,m.cfg.b2][i] || `Jugador ${i+1}`;}
+function voiceTeam(t){return t===0?`${m.cfg.a1} y ${m.cfg.a2}`:`${m.cfg.b1} y ${m.cfg.b2}`;}
+const serveOrder=[0,2,1,3];
+function teamOf(playerIdx){return playerIdx<2?0:1;}
+function winSets(t){return m.sets.filter(s=>s.winner===t).length;}
+function currentServer(){
+ if(!m.tb)return m.server;
+ const first=m.tbStartServer??m.server;
+ const served=m.tbPoints;
+ const rotation=served===0?0:Math.floor((served+1)/2);
+ return serveOrder[(serveOrder.indexOf(first)+rotation)%4];
+}
+function servingSide(){return ((m.points[0]+m.points[1])%2===0)?'DERECHA':'IZQUIERDA';}
+function setNo(){return Math.min(m.sets.length+1,+m.cfg.best);}
+function elapsed(){if(!m.created)return 0;const end = m.finished!==null && m.endedAt ? m.endedAt : now(); return Math.max(0,end-m.created);}
+function pointLabels(){
+  if(m.tb) return [String(m.points[0]),String(m.points[1])];
+  const map=['0','15','30','40'];
+  const a=m.points[0], b=m.points[1];
+  if(m.cfg.deuce==='gold') return [map[Math.min(a,3)]||'40', map[Math.min(b,3)]||'40'];
+  if(a>=3 && b>=3){
+    if(a===b) return ['40','40'];
+    if(a===b+1) return ['AD','40'];
+    if(b===a+1) return ['40','AD'];
+  }
+  return [map[Math.min(a,3)]||'40', map[Math.min(b,3)]||'40'];
+}
+function calledGameScore(serverTeam){
+  if(m.tb)return `${m.points[serverTeam]} ${m.points[1-serverTeam]}`;
+  const labels=pointLabels();
+  if(labels[0]==='40'&&labels[1]==='40')return '40 iguales';
+  if(labels.includes('AD')){
+    return 'Ventaja';
+  }
+  return `${labels[serverTeam]} ${labels[1-serverTeam]}`;
+}
+function spokenPoints(){
+  if(m.tb) return `Tie break ${m.points[0]} a ${m.points[1]}`;
+  return pointLabels().map(x=>x==='AD'?'ventaja':x).join(' a ');
+}
+function neededSets(){return Math.ceil(+m.cfg.best/2);}
+function wouldWinPoint(t){
+  const me=m.points[t]+1, other=m.points[1-t];
+  if(m.tb) return me>=+m.cfg.tiebreak && (me-other)>=2;
+  if(m.cfg.deuce==='gold') return (me>=4 && other<=2) || (me>=4 && other>=3);
+  return me>=4 && (me-other)>=2;
+}
+function gameOutcomeIfWin(t){
+  const games=m.games.slice();
+  games[t]++;
+  const other=1-t;
+  let setWin = false;
+  if(m.tb) setWin = true;
+  else if(games[t]>=6 && games[t]-games[other]>=2) setWin = true;
+  const matchWin = setWin && (winSets(t)+1)>=neededSets();
+  return {games,setWin,matchWin};
+}
+function pressureCall(t){
+  if(!wouldWinPoint(t)) return '';
+  const out=gameOutcomeIfWin(t);
+  if(out.matchWin) return 'Match point.';
+  if(out.setWin) return 'Punto para set.';
+  return 'Punto para game.';
+}
+function archiveCurrent(){
+  if((m.total[0]+m.total[1])===0 && m.sets.length===0) return;
+  const copy=clone(m);
+  copy.archivedAt=now();
+  data.history.unshift(copy);
+  data.history=data.history.slice(0,120);
+}
+function serverForGame(index){const first=(+m.cfg.first)-1;return serveOrder[(serveOrder.indexOf(first)+index)%4];}
+function finishGame(t,fromTieBreak=false){
+  m.games[t]++;
+  m.gamesWon[t]++;
+  const completedGames = m.games.slice();
+  event(`Game para ${teamName(t)} (${completedGames[0]}-${completedGames[1]})`);
+
+  let setWon=false;
+  if(fromTieBreak) setWon=true;
+  else if(m.games[t]>=6 && m.games[t]-m.games[1-t]>=2) setWon=true;
+
+  m.points=[0,0];
+  m.tb=false;
+  m.tbPoints=0;
+  m.gameIndex++;
+  m.server = serverForGame(m.gameIndex);
+  if(fromTieBreak){m.server=serveOrder[(serveOrder.indexOf(m.tbStartServer??m.server)+1)%4];}
+  m.tbStartServer=null;
+
+  if(setWon){
+    const setScore=completedGames.slice();
+    m.sets.push({games:setScore,winner:t});
+    event(`Set ${m.sets.length} para ${teamName(t)} (${setScore[0]}-${setScore[1]})`);
+    m.games=[0,0];
+    m.side = 1-m.side;
+    if(winSets(t)>=neededSets()){
+      m.finished=t;
+      m.endedAt=now();
+      event(`Partido para ${teamName(t)}`);
+      recordChampionshipWinner(t);
+    }
+  }else if(m.games[0]===6 && m.games[1]===6){
+    m.tb=true;
+    m.tbStartServer=m.server;
+    event(`Tie-break a ${m.cfg.tiebreak}`);
+  }
+  return {setWon, setScore:setWon?m.sets[m.sets.length-1].games.slice():null, finished:m.finished!==null};
+}
+function awardPoint(team, kind='Punto'){
+  if(m.finished!==null) return;
+  if(!m.created){toast('Primero elegí el saque inicial');return;}
+  const snapshot=clone(m); snapshot.undo=[];
+  m.undo.push(snapshot); m.undo=m.undo.slice(-150);
+
+  const servingTeam=teamOf(currentServer());
+  m.points[team]++;
+  m.total[team]++;
+  m.lastWinner=team;
+  const idx={Punto:0,Falta:1,'Error no forzado':2,'Error forzado':3}[kind] ?? 0;
+  m.pointTypes[idx][team]=(m.pointTypes[idx][team]||0)+1;
+
+  let wonGame=false, wonSet=false, wonMatch=false, setScore=null, gameScore=null;
+  if(m.tb){
+    m.tbPoints++;
+    if(m.points[team]>=+m.cfg.tiebreak && (m.points[team]-m.points[1-team])>=2){
+      const out=finishGame(team,true);
+      wonGame=true; wonSet=out.setWon; wonMatch=out.finished; setScore=out.setScore; gameScore=setScore || m.games.slice();
+    }
+  }else{
+    const me=m.points[team], other=m.points[1-team];
+    const wins = m.cfg.deuce==='gold' ? ((me>=4 && other<=2)||(me>=4 && other>=3)) : (me>=4 && (me-other)>=2);
+    if(wins){
+      const completedBeforeSet = m.games.slice();
+      const out=finishGame(team,false);
+      wonGame=true; wonSet=out.setWon; wonMatch=out.finished;
+      gameScore = wonSet ? out.setScore : [completedBeforeSet[0] + (team===0?1:0), completedBeforeSet[1] + (team===1?1:0)];
+      setScore = out.setScore;
+    }
+  }
+
+  function calledPoints(labels,serverTeam){return `${labels[serverTeam]} ${labels[1-serverTeam]}`;}
+  let say=`Punto para ${voiceTeam(team)}. `;
+  if(wonGame){
+    say += `Game para ${voiceTeam(team)}. ${gameScore[servingTeam]} ${gameScore[1-servingTeam]}. `;
+    if(wonSet && setScore){
+      say += `Set ganado por ${voiceTeam(team)}. ${setScore[servingTeam]} ${setScore[1-servingTeam]}. ${wonMatch?'':'Cambio de cancha. '}`;
+    }
+    if(wonMatch){
+      say += `Partido ganado por ${voiceTeam(team)}. `;
+      if(m.champGameId && championship?.rounds?.at(-1)?.[0]?.winner){say += `Ganadores del torneo: ${voiceTeam(team)}. `;}
+    }else{
+      say += `Próximo game. Saca ${playerName(currentServer())}. `;
+    }
+  }else{
+    say += `${calledGameScore(servingTeam)}. `;
+    const press=pressureCall(team);
+    if(press) say += press + ' ';
+  }
+
+  $('last-announcement').textContent=say.trim();
+  if(m.cfg.sound) speak(say.trim());
+  save();
+  render();
+}
+function undo(){
+  if(!m.undo.length){ toast('No hay puntos para deshacer'); return; }
+  const prev=m.undo.pop();
+  const remain=m.undo;
+  m=prev; m.undo=remain; data.current=m;
+  save(); render(); toast('Último punto deshecho');
+}
+function toast(msg){const t=$('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast.tid); toast.tid=setTimeout(()=>t.style.display='none',1800);}
+
+let selectedVoice=null;
+let voicePreference=localStorage.getItem('padel-voice-pref') || 'auto';
+let languagePref=localStorage.getItem('padel-voice-language')||'es';
+let genderPref=localStorage.getItem('padel-voice-gender')||'male';
+const femaleWords=/female|woman|mujer|femenin|paulina|helena|monica|sofia|lucia|samantha|victoria|anna|alice|amelie/i;
+const maleWords=/male|man|hombre|masculin|diego|jorge|carlos|pablo|daniel|thomas|david|mark/i;
+function voiceMatchesGender(v){
+ if(genderPref==='auto')return true;
+ return genderPref==='female'?femaleWords.test(v.name):maleWords.test(v.name);
+}
+function chooseVoice(){
+ const lang=$('voice-language'); const gen=$('voice-gender');
+ if(lang)lang.value=languagePref;
+ if(gen)gen.value=genderPref;
+ if(window.AndroidTTS && typeof window.AndroidTTS.getVoices==='function'){
+  const sel=$('voice-choice');
+  try{
+   const all=JSON.parse(window.AndroidTTS.getVoices()||'[]');
+   const voices=all.filter(v=>String(v.lang).toLowerCase().split('-')[0]===languagePref);
+   if(sel){
+    sel.innerHTML='<option value="auto">Automática / voz instalada</option>'+voices.map(v=>`<option value="${escapeHTML(v.id)}">${escapeHTML(v.name+' · '+v.lang+(v.network?' · requiere internet':''))}</option>`).join('');
+    sel.value=voicePreference;
+    if(sel.selectedIndex<0)sel.value='auto';
+   }
+   if(genderPref==='male'&&!voices.some(v=>/male|masculin|hombre/i.test(v.name))){
+    $('voice-status').textContent='ℹ️ Android no identifica voces por sexo. Elegí una voz por su nombre para escucharla.';
+   }
+  }catch(e){}
+  return;
+ }
+ if(!('speechSynthesis' in window))return;
+ const all=window.speechSynthesis.getVoices();
+ const voices=all.filter(v=>v.lang.toLowerCase().split('-')[0]===languagePref);
+ const preferred=voices.filter(v=>voiceMatchesGender(v));
+ const hasGender=preferred.length>0;
+ selectedVoice=voices.find(v=>v.voiceURI===voicePreference)
+  ||preferred.find(v=>v.lang.toLowerCase()==='es-ar')
+  ||preferred.find(v=>v.lang.toLowerCase().startsWith('es-'))
+  ||preferred[0]||voices[0]||null;
+ const help=$('voice-gender');if(help)help.title=genderPref==='male'&&!hasGender?'Este dispositivo no ofrece una voz masculina; no alteramos el tono artificialmente.':'';
+ const sel=$('voice-choice');
+ if(sel){
+  sel.innerHTML='<option value="auto">Automática / voz disponible</option>'+voices.map(v=>`<option value="${escapeHTML(v.voiceURI)}">${escapeHTML(v.name+' · '+v.lang+(v.network?' · requiere internet':''))}</option>`).join('');
+  sel.value=voicePreference==='auto'?'auto':voicePreference;
+  if(sel.selectedIndex<0)sel.value='auto';
+ }
+ if(genderPref==='male'&&!hasGender&&$('voice-status'))$('voice-status').textContent='⚠️ No hay voz masculina instalada. Se conserva una voz natural sin deformar el tono.';
+}
+if('speechSynthesis' in window){chooseVoice();window.speechSynthesis.addEventListener('voiceschanged',chooseVoice);}
+function speak(text){
+  $('voice-status').textContent='🔊 '+text;
+  if(window.AndroidTTS && typeof window.AndroidTTS.speak === 'function'){
+    try{
+      if(typeof window.AndroidTTS.setVoicePreference==='function'){
+        const message=window.AndroidTTS.setVoicePreference(languagePref,genderPref,voicePreference);
+        if(genderPref==='male' && String(message).startsWith('No se encontró')){
+          $('voice-status').textContent='⚠️ '+message;
+          return false;
+        }
+      }
+      window.AndroidTTS.speak(text); $('voice-status').textContent='🔊 Voz nativa: '+text; return true;
+    }catch(e){}
+  }
+  if(!('speechSynthesis' in window)){
+    $('voice-status').textContent='⚠️ Voz no disponible en este navegador.';
+    return false;
+  }
+  try{
+    chooseVoice();
+    const synth=window.speechSynthesis;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(selectedVoice){ u.voice=selectedVoice; u.lang=selectedVoice.lang || 'es-AR'; }
+    else u.lang=({es:'es-AR',en:'en-US',it:'it-IT',fr:'fr-FR',de:'de-DE'})[languagePref];
+    u.rate=.96; u.pitch=1; u.volume=1;
+    u.onstart=()=> $('voice-status').textContent='🔊 Reproduciendo: '+text;
+    u.onend=()=> $('voice-status').textContent='✅ Último anuncio: '+text;
+    u.onerror=e=> $('voice-status').textContent='⚠️ Audio no disponible en este navegador ('+(e.error||'synthesis-failed')+'). Para audio fiable hace falta la APK con voz nativa.';
+    setTimeout(()=>synth.speak(u),40);
+    return true;
+  }catch(e){
+    $('voice-status').textContent='⚠️ No se pudo activar la voz: '+e.message;
+    return false;
+  }
+}
+
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function safeClock(v,fallback){
+ const d=String(v||'').replace(/\D/g,'');
+ const value=/^\d{4}$/.test(d) ? d.slice(0,2)+':'+d.slice(2) : String(v||'');
+ return /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)?value:fallback;
+}
+function getTurnDuration(c){
+ const start=(c.slotStart||'22:00').split(':').map(Number),end=(c.slotEnd||'23:30').split(':').map(Number);
+ if(start.length!==2||end.length!==2||start.some(Number.isNaN)||end.some(Number.isNaN))return 90*60000;
+ let minutes=(end[0]*60+end[1])-(start[0]*60+start[1]);if(minutes<=0)minutes+=1440;return minutes*60000;
+}
+function turnSchedule(cfg, reference=now()){
+ const start=safeClock(cfg.slotStart,'22:00').split(':').map(Number);
+ const end=safeClock(cfg.slotEnd,'23:30').split(':').map(Number);
+ const startDate=new Date(reference);
+ startDate.setHours(start[0],start[1],0,0);
+ // Turn starts at its actual scheduled wall-clock hour. Allow a past start today;
+ // an overnight turn is anchored on the previous day when appropriate.
+ let begin=startDate.getTime();
+ let duration=getTurnDuration(cfg);
+ if(duration>=24*3600000)duration=90*60000;
+ // For shifts crossing midnight, consider previous day's start if we are in its end window.
+ if(end[0]*60+end[1] <= start[0]*60+start[1] && reference<begin && reference >= begin+duration-86400000){begin-=86400000;}
+ return {begin,end:begin+duration};
+}
+function ensureTurn(match, force=false){
+ const cfg=match.cfg;
+ const key=[cfg.venue||'',safeClock(cfg.slotStart,'22:00'),safeClock(cfg.slotEnd,'23:30')].join('|');
+ // New schedule when the configured shift changes; otherwise the same timer survives all matches.
+ if(force || !turn || !Number.isFinite(turn.endAt) || turn.key!==key){
+   const schedule=turnSchedule(cfg);
+   turn={key,startAt:schedule.begin,endAt:schedule.end,alarmPlayed:schedule.end<=now()};
+ }
+ match.turnStartAt=turn.startAt;
+ match.turnEndAt=turn.endAt;
+ match.alarmPlayed=turn.alarmPlayed;
+}
+function applyTurnTimes(match){
+ if(!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(match.cfg.slotStart||'') || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(match.cfg.slotEnd||''))return;
+ ensureTurn(match);
+}
+function updateTurnDisplay(){
+ const dt=new Date(m.created);
+ $('match-venue').textContent=m.cfg.venue ? '· '+m.cfg.venue : '';
+ $('match-date').textContent=m.created?dt.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'}):'--/--/----';
+ $('match-start').textContent=m.created?dt.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',hour12:false})+' hs':'--:--';
+ if(!turn){$('countdown').textContent='--:--:--';$('match-elapsed').textContent=m.created?formatTime(elapsed()):'00:00:00';return;}
+ $('match-elapsed').textContent=m.created?formatTime((m.finished!==null&&m.endedAt?m.endedAt:now())-m.created):'00:00:00';
+ const current=now();
+ const beforeTurn=current<turn.startAt;
+ const remaining=beforeTurn?turn.startAt-current:Math.max(0,turn.endAt-current);
+ const totalSeconds=Math.ceil(remaining/1000);
+ const hh=String(Math.floor(totalSeconds/3600)).padStart(2,'0'),mm=String(Math.floor(totalSeconds%3600/60)).padStart(2,'0'),ss=String(totalSeconds%60).padStart(2,'0');
+ const el=$('countdown');el.textContent=(beforeTurn?'-':'')+hh+':'+mm+':'+ss;
+ el.title=beforeTurn?'Falta para comenzar el turno':'Tiempo restante del turno';
+ el.classList.toggle('ending',!beforeTurn&&remaining>0&&remaining<=300000);
+ el.classList.toggle('expired',!beforeTurn&&remaining===0);
+ if(!beforeTurn&&remaining===0&&!turn.alarmPlayed){
+   turn.alarmPlayed=true;save();playTurnBuzzer();toast('¡Fin del turno!');
+ }
+}
+function unlockAlarm(){try{audioContext ||= new (window.AudioContext||window.webkitAudioContext)();if(audioContext.state==='suspended')audioContext.resume();}catch(e){}}
+function playTurnBuzzer(){
+ try{
+  unlockAlarm();if(!audioContext)throw new Error('Sin audio');
+  const ctx=audioContext, start=ctx.currentTime, duration=2.0;
+  const master=ctx.createGain(), comp=ctx.createDynamicsCompressor();
+  master.gain.setValueAtTime(0.0001,start);
+  master.gain.linearRampToValueAtTime(0.28,start+0.055);
+  master.gain.setValueAtTime(0.28,start+1.86);
+  master.gain.exponentialRampToValueAtTime(0.0001,start+duration);
+  master.connect(comp);comp.connect(ctx.destination);
+  // Bocina grave con armónicos, similar al final del tiempo en básquet.
+  for(const [freq,level] of [[145,0.62],[290,0.29],[435,0.14]]){
+   const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';
+   o.frequency.setValueAtTime(freq,start);o.frequency.linearRampToValueAtTime(freq*.975,start+duration);
+   g.gain.value=level;o.connect(g);g.connect(master);o.start(start);o.stop(start+duration+.02);
+  }
+ }catch(e){$('voice-status').textContent='⚠️ No se pudo emitir la alarma. Se mostrará el fin de turno en pantalla.';}
+}
+function renderChampTeams(){const n=+$('champ-count').value||4;const holder=$('champ-teams');const existing=Array.from(holder.querySelectorAll('.tournament-team')).map(e=>[e.querySelector('[data-p=0]').value,e.querySelector('[data-p=1]').value]);holder.innerHTML=Array.from({length:n},(_,i)=>`<div class="tournament-team"><span>${i+1}</span><input data-p="0" placeholder="Jugador 1" value="${escapeHTML(existing[i]?.[0]||'')}"/><input data-p="1" placeholder="Jugador 2" value="${escapeHTML(existing[i]?.[1]||'')}"/></div>`).join('');}
+function createChampionship(){
+ // El torneo no depende del turno: los horarios nunca impiden iniciarlo.
+ if((m.total[0]+m.total[1])>0 && m.finished===null && !confirm('¿Guardar el partido anterior e iniciar el nuevo torneo?'))return false;
+ const teams=Array.from(document.querySelectorAll('.tournament-team')).map((e,i)=>({
+  id:i+1,names:[e.querySelector('[data-p="0"]').value.trim()||`Jugador 1`,e.querySelector('[data-p="1"]').value.trim()||`Jugador 2`]
+ }));
+ const count=teams.length;
+ if(count<3||count>10){toast('Elegí entre 3 y 10 equipos');return false;}
+ const size=2**Math.ceil(Math.log2(count));
+ const seed=Array.from({length:size},(_,i)=>i+1);
+ let participants=seed.map(v=>v<=count?{type:'team',id:v}:null);
+ const rounds=[];
+ while(participants.length>1){
+  const current=[],next=[];
+  for(let i=0;i<participants.length;i+=2){
+   const left=participants[i],right=participants[i+1],id='r'+rounds.length+'m'+i/2;
+   const game={id,round:rounds.length+1,left,right,winner:null};
+   if(left&&!right&&left.type==='team')game.winner=left.id;
+   if(right&&!left&&right.type==='team')game.winner=right.id;
+   current.push(game);next.push({type:'winner',id});
+  }
+  rounds.push(current);participants=next;
+ }
+ if(count===4){
+   const semi1=rounds[0][0].id, semi2=rounds[0][1].id;
+   rounds.splice(1,0,[{id:'bronze',round:2,left:{type:'loser',id:semi1},right:{type:'loser',id:semi2},winner:null,thirdPlace:true}]);
+   // La final conserva sus participantes (ganadores de semifinales).
+   if(rounds[2])rounds[2].forEach(g=>g.round=3);
+ }
+ const nextChamp={teams,rounds,currentGameId:null,created:Date.now()};
+ // Archive prior game, then install bracket and start from tournament input names, not form fields.
+ if((m.total[0]+m.total[1])>0)archiveCurrent();
+ championship=nextChamp;
+ syncChampionship();
+ const ready=playableChampMatches()[0];
+ if(!ready){toast('No hay enfrentamiento disponible');renderChampionship();return false;}
+ const left=championship.teams.find(t=>t.id===resolveRef(ready.left));
+ const right=championship.teams.find(t=>t.id===resolveRef(ready.right));
+ const cfg={...m.cfg,a1:left.names[0],a2:left.names[1],b1:right.names[0],b2:right.names[1],
+  venue:$('venue').value.trim(),slotStart:$('slot-start').value.trim(),slotEnd:$('slot-end').value.trim(),
+  best:+$('best').value,deuce:$('deuce').value,tiebreak:+$('tiebreak').value,first:+$('first').value,sound:$('sound').checked};
+ m=makeMatch(cfg);m.champGameId=ready.id;championship.currentGameId=ready.id;
+ applyTurnTimes(m);
+ data.current=m;
+ save();
+ renderChampionship();render();openPage('match');
+ requestKeepAwake();toast('Torneo iniciado: '+teamName(0)+' vs '+teamName(1));
+ return true;
+}
+function getChampMatch(id){return championship?.rounds.flat().find(g=>g.id===id);}
+function resolveRef(ref){
+ if(!ref)return null;
+ if(ref.type==='team')return ref.id;
+ const g=getChampMatch(ref.id);
+ if(!g||!g.winner)return null;
+ if(ref.type==='loser'){
+   const l=resolveRef(g.left),r=resolveRef(g.right);
+   return l===g.winner?r:l;
+ }
+ return g.winner;
+}
+function syncChampionship(){if(!championship)return;for(const round of championship.rounds){for(const g of round){const l=resolveRef(g.left),r=resolveRef(g.right);if(l&&!r&&!g.winner&&(!g.right|| (g.right.type==='winner'&&getChampMatch(g.right.id)?.winner!==null)))g.winner=l;else if(r&&!l&&!g.winner&&(!g.left||(g.left.type==='winner'&&getChampMatch(g.left.id)?.winner!==null)))g.winner=r;}}}
+function displayTeam(id){return championship.teams.find(t=>t.id===id)?.names.join('/')||'Pendiente';}
+function renderChampionship(){const box=$('champ-bracket');if(!championship){box.innerHTML='';return;}syncChampionship();box.innerHTML=championship.rounds.map((round,ri)=>round.map((g,mi)=>{const l=resolveRef(g.left),r=resolveRef(g.right);const ready=l&&r;const win=g.winner;return `<div class="bracket-row"><strong>${g.thirdPlace?'Tercer puesto':ri===championship.rounds.length-1?'FINAL':'Ronda '+(ri+1)+' · Partido '+(mi+1)}</strong><small>${l?escapeHTML(displayTeam(l)):'Por definir'} vs ${r?escapeHTML(displayTeam(r)):'Por definir'}</small>${win?`<small>Ganador: ${escapeHTML(displayTeam(win))}</small>`:ready?`<button type="button" data-champ-start="${g.id}">Jugar este partido</button>`:'<small>Esperando resultado</small>'}</div>`}).join('')).join('');document.querySelectorAll('[data-champ-start]').forEach(b=>b.onclick=()=>startChampionshipGame(b.dataset.champStart));}
+function playableChampMatches(){
+ if(!championship)return [];
+ syncChampionship();
+ return championship.rounds.flat().filter(g=>!g.winner && resolveRef(g.left) && resolveRef(g.right));
+}
+function championshipProgress(){
+ if(!championship)return {number:0,total:0};
+ const total=championship.teams.length===4?4:championship.teams.length-1;
+ const matches=championship.rounds.flat().filter(g=>g.left&&g.right&&!(g.winner&&(!resolveRef(g.left)||!resolveRef(g.right))));
+ const played=matches.filter(g=>!!g.winner).length;
+ const current=championship.currentGameId?matches.findIndex(g=>g.id===championship.currentGameId):-1;
+ return {number:current>=0?current+1:Math.min(played+1,total),total};
+}
+function startChampionshipGame(id){
+ const g=getChampMatch(id);if(!g||g.winner)return false;
+ const l=resolveRef(g.left),r=resolveRef(g.right);if(!l||!r)return false;
+ const a=championship.teams.find(t=>t.id===l),b=championship.teams.find(t=>t.id===r);
+ if(!a||!b)return false;
+ if((m.total[0]+m.total[1])>0&&m.finished===null&&!confirm('¿Guardar el partido anterior e iniciar este encuentro?'))return false;
+ if(m.total[0]+m.total[1]>0)archiveCurrent();
+ // IMPORTANT: build directly from tournament teams; avoid loadForm overwriting inputs.
+ const cfg={...m.cfg,a1:a.names[0],a2:a.names[1],b1:b.names[0],b2:b.names[1]};
+ const venue=$('venue').value.trim();if(venue)cfg.venue=venue;
+ m=makeMatch(cfg);m.champGameId=id;championship.currentGameId=id;
+ applyTurnTimes(m);data.current=m;save();render();openPage('match');
+ requestKeepAwake();toast('Torneo: '+teamName(0)+' vs '+teamName(1));return true;
+}
+function finishCurrentNow(){
+ if(m.finished!==null){toast('Este partido ya terminó');return;}
+ if(!confirm('¿Terminar el partido actual y guardar su resultado? El turno seguirá corriendo.'))return;
+ if(m.champGameId){
+   const answer=prompt(`¿Quién gana este partido del torneo?\\n1: ${teamName(0)}\\n2: ${teamName(1)}\\nCancelá para volver`, '1');
+   if(answer===null)return;
+   const side=Number(answer)-1;
+   if(side!==0&&side!==1){toast('Elegí 1 o 2');return;}
+   m.finished=side;
+   m.endedAt=now();
+   event(`Partido finalizado manualmente. Ganó ${teamName(side)}`);
+   recordChampionshipWinner(side);
+   if(m.champGameId && championship?.rounds?.at(-1)?.[0]?.winner){
+     const announcement=`Ganadores del torneo: ${voiceTeam(side)}.`;
+     $('last-announcement').textContent=announcement;
+     if(m.cfg.sound)speak(announcement);
+   }
+ }else{
+   m.finished=-1;
+   m.endedAt=now();
+   event('Partido terminado manualmente');
+ }
+ save();render();toast('Partido finalizado · Turno en curso');
+}
+function nextChampionshipGame(){
+ if(!championship)return;
+ const pending=playableChampMatches();
+ if(!pending.length){toast('Torneo finalizado o esperando resultados');return;}
+ startChampionshipGame(pending[0].id);
+}
+function recordChampionshipWinner(side){
+ if(!championship?.currentGameId)return;
+ const g=getChampMatch(championship.currentGameId);if(!g)return;
+ g.winner=resolveRef(side===0?g.left:g.right);
+ championship.currentGameId=null;
+ syncChampionship();save();renderChampionship();
+}
+let wakeLock=null;
+async function requestKeepAwake(){
+ if(!('wakeLock' in navigator))return;
+ try{if(!wakeLock)wakeLock=await navigator.wakeLock.request('screen');}
+ catch(e){const el=$('voice-status');if(el)el.textContent='⚠️ No se pudo mantener la pantalla encendida; desactivá el bloqueo automático en Android.';}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&m.created&&m.finished===null)requestKeepAwake();});
+document.addEventListener('pointerdown',()=>{if(m.finished===null)requestKeepAwake();},{once:true});
+function renderOfficial(labs){
+  const n=Math.max(3,m.sets.length+1);
+  $('columns').innerHTML = Array.from({length:n},(_,i)=>`<span>S${i+1}</span>`).join('') + '<span>PTS</span>';
+  const server=currentServer();
+  $('officialrows').innerHTML = [0,1].map(t=>{
+    const name = (t===0 ? [m.cfg.a1,m.cfg.a2] : [m.cfg.b1,m.cfg.b2]).map(x=>`<span class="playerline">${escapeHTML(x)}</span>`).join('');
+    const serveNote = (m.finished===null && teamOf(server)===t)
+      ? `<small class="server-mini"><span class="fuchsia-dot" style="width:11px;height:11px;display:inline-block;vertical-align:middle"></span></small>`
+      : '';
+    const cols = Array.from({length:n},(_,i)=>{
+      let val='–';
+      if(i<m.sets.length) val=m.sets[i].games[t];
+      else if(i===m.sets.length) val=m.games[t];
+      return `<strong class="officialnum ${i===m.sets.length?'current':''}">${val}</strong>`;
+    }).join('');
+    return `<div class="officialrow" style="grid-template-columns:minmax(0,1fr) repeat(${n+1},minmax(30px,1fr))"><div class="officialname">${name}${serveNote}</div>${cols}<strong class="officialpts">${labs[t]}</strong></div>`;
+  }).join('');
+}
+function renderAdvanced(){
+  const on = !!m.advanced;
+  $('adv0').hidden = !on;
+  $('adv1').hidden = !on;
+  $('award0').hidden = on;
+  $('award1').hidden = on;
+  const ai=$('audio-indicator');
+  ai.setAttribute('aria-pressed',String(!!m.cfg.sound));
+  $('speaker-icon').textContent=m.cfg.sound?'🔊':'🔇';
+  $('audio-switch-status').textContent=m.cfg.sound?'Activado':'Silenciado';
+  $('advanced-button').setAttribute('aria-pressed',String(on));
+  $('advanced-button').setAttribute('aria-expanded',String(on));
+  $('advanced-switch-status').textContent=on?'Activada · Elegí tipo de punto':'Desactivada · Registrar tipo de punto';
+}
+function renderStats(){
+  const values=[
+    ['Puntos azul',m.total[0]],['Puntos rojo',m.total[1]],
+    ['Games azul',m.gamesWon[0]],['Games rojo',m.gamesWon[1]],
+    ['Sets azul',winSets(0)],['Sets rojo',winSets(1)],
+    ['Duración',formatTime(elapsed())],['Tie-break',m.tb?'En juego':'No'],
+    ['Puntos ganadores',`${m.pointTypes[0][0]||0} / ${m.pointTypes[0][1]||0}`],
+    ['Faltas',`${m.pointTypes[1][0]||0} / ${m.pointTypes[1][1]||0}`],
+    ['Error forzado',`${m.pointTypes[2][0]||0} / ${m.pointTypes[2][1]||0}`],
+    ['Error no forzado',`${m.pointTypes[3][0]||0} / ${m.pointTypes[3][1]||0}`]
+  ];
+  $('statslist').innerHTML = values.map(([label,val])=>`<div class="stat"><b>${escapeHTML(val)}</b><small>${label}</small></div>`).join('');
+  $('events').innerHTML = '<div class="eyebrow">ÚLTIMOS EVENTOS</div>' + (m.events.length ? m.events.slice(0,20).map(e=>`<div class="entry"><span>${escapeHTML(e.text)}</span><small>${new Date(e.at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</small></div>`).join('') : '<div class="empty">Los eventos del partido aparecerán aquí.</div>');
+}
+function renderHistory(){
+  $('historylist').innerHTML = data.history.length ? data.history.map((h,i)=>`<div class="entry"><div><strong>${escapeHTML(h.cfg.a1)} / ${escapeHTML(h.cfg.a2)} vs. ${escapeHTML(h.cfg.b1)} / ${escapeHTML(h.cfg.b2)}</strong><small>${new Date(h.created).toLocaleString('es-AR')} · ${h.sets.map(s=>s.games.join('-')).join(' / ') || 'Partido interrumpido'} · ${h.finished===null ? 'Sin finalizar' : `Ganó ${escapeHTML(h.finished===0 ? h.cfg.a1+' / '+h.cfg.a2 : h.cfg.b1+' / '+h.cfg.b2)}`}</small></div><button class="secondary" data-delete="${i}">✕</button></div>`).join('') : '<div class="empty">Todavía no hay partidos guardados.</div>';
+  document.querySelectorAll('[data-delete]').forEach(btn=>btn.onclick=()=>{
+    const i=+btn.dataset.delete;
+    if(confirm('¿Eliminar este partido del historial?')){ data.history.splice(i,1); save(); renderHistory(); }
+  });
+}
+function render(){
+  data.current=m;
+  $('advanced-toggle').checked = !!m.advanced;
+  const labs=pointLabels();
+  const server=currentServer();
+  const currentTeam=teamOf(server);
+
+  $('name0').textContent=teamName(0);
+  $('name1').textContent=teamName(1);
+  $('point0').textContent=labs[0];
+  $('point1').textContent=labs[1];
+  for(const t of [0,1]){ $('point'+t).classList.toggle('point-ad',labs[t]==='AD'); $('point'+t).classList.toggle('point-numeric',labs[t]!=='AD'); }
+  $('point0').classList.toggle('last-win',m.lastWinner===0);
+  $('point1').classList.toggle('last-win',m.lastWinner===1);
+  $('team0card').classList.toggle('active-serve',m.finished===null && currentTeam===0);
+  $('team1card').classList.toggle('active-serve',m.finished===null && currentTeam===1);
+
+  for(const t of [0,1]){
+    const isServing=m.finished===null && currentTeam===t;
+    $('pick'+t).hidden=!!m.created || m.finished!==null;
+    $('award'+t).disabled = m.finished!==null || !m.created;
+    $('serve'+t).innerHTML = (m.created && isServing) ? `<div class="serve-stack"><div class="serve-head"><span class="fuchsia-dot"></span><span class="serve-name">Saca ${escapeHTML(playerName(server))}</span></div><div class="serve-from">${servingSide()}</div></div>` : '';
+    $('serve'+t).style.cursor=(m.finished===null&&m.total[0]+m.total[1]===0)?'pointer':'default';
+    $('name'+t).style.cursor=(m.finished===null&&m.total[0]+m.total[1]===0)?'pointer':'default';
+    $('award'+t).disabled = m.finished!==null || !m.created;
+  }
+
+  $('setinfo').textContent=`SET ${setNo()}`;
+  $('modeinfo').textContent = m.cfg.deuce==='gold' ? 'PUNTO DE ORO' : 'CON VENTAJA';
+  $('tbinfo').textContent = m.tb ? 'TIE-BREAK' : `GAME ${m.games[0]+m.games[1]+1}`;
+  $('phase').textContent = !m.created ? 'LISTO PARA INICIAR' : m.finished!==null ? 'PARTIDO FINALIZADO' : 'PARTIDO EN CURSO';
+  $('serve-desc').textContent = m.finished!==null ? '🏆 Partido finalizado' : !m.created?'Elegí el saque inicial para comenzar el partido':`Saca ${playerName(server)} · ${servingSide()}`;
+  $('side-desc').textContent = m.tb ? 'Tie-break: primer saque 1 punto; luego 2 por jugador, cambio de lado cada 6.' : !m.created?'Tocá Elegir saque en el equipo que comienza. Jugador 1 saca desde la derecha.':'Saque alternado entre parejas y jugadores.';
+  $('winner').innerHTML = m.finished===-1 ? '<div class="winner">Partido terminado manualmente</div>' : m.finished!==null ? `<div class="winner">🏆 Ganadores: ${escapeHTML(teamName(m.finished))}</div>` : '';
+  if(m.champGameId && m.finished>=0 && championship?.rounds?.at(-1)?.[0]?.winner){$('winner').innerHTML=`<div class="winner">🏆 CAMPEONES DEL TORNEO: ${escapeHTML(teamName(m.finished))}</div>`;}
+  $('undo').disabled = !m.undo.length;
+  $('finish-now').hidden=m.finished!==null;
+  updateTurnDisplay();
+  $('game-duration').textContent = m.finished!==null ? 'Final' : (m.tb ? 'TB' : '');
+
+  const live=$('champ-live'), next=$('next-champ');
+  const activeChamp=!!(championship && m.champGameId);
+  live.hidden=!activeChamp;
+  if(activeChamp){
+    const progress=championshipProgress();
+    live.textContent=`🏆 TORNEO · Partido ${Math.max(1,progress.number)}/${progress.total} · ${escapeHTML(teamName(0))} vs ${escapeHTML(teamName(1))}`;
+  }
+  next.hidden=!(activeChamp && m.finished!==null && playableChampMatches().length>0);
+  renderOfficial(labs);
+  renderAdvanced();
+  renderStats();
+  renderHistory();
+  save();
+}
+function loadForm(){
+  const c=m.cfg;
+  ['a1','a2','b1','b2'].forEach(k=>$(k).value=c[k]||defaults[k]);
+  $('best').value=String(c.best||3);
+  $('deuce').value=c.deuce||'adv';
+  $('tiebreak').value=String(c.tiebreak||7);
+  $('first').value=String(c.first||1);
+  $('sound').checked=!!c.sound;
+  $('venue').value=c.venue||''; $('slot-start').value=c.slotStart||''; $('slot-end').value=c.slotEnd||'';
+  voicePreference=localStorage.getItem('padel-voice-pref') || 'auto';
+  languagePref=localStorage.getItem('padel-voice-language')||'es';
+  genderPref=localStorage.getItem('padel-voice-gender')||'male';
+  chooseVoice();
+}
+function normalizeTimeInput(el){
+  const v=el.value.trim();
+  if(/^\d{3,4}$/.test(v)){
+    const digits=v.padStart(4,'0');
+    el.value=digits.slice(0,2)+':'+digits.slice(2);
+  }
+}
+for(const id of ['slot-start','slot-end']){
+  const el=$(id);
+  el.addEventListener('input',()=>{
+    const digits=el.value.replace(/\D/g,'');
+    if(/^\d{4}$/.test(digits) && el.value.indexOf(':')<0)el.value=digits.slice(0,2)+':'+digits.slice(2);
+  });
+  el.addEventListener('blur',()=>normalizeTimeInput(el));
+}
+function newMatch(){
+ // El reloj del turno es independiente del inicio de cada partido.
+  const cfg={
+    a1:$('a1').value.trim() || defaults.a1,
+    a2:$('a2').value.trim() || defaults.a2,
+    b1:$('b1').value.trim() || defaults.b1,
+    b2:$('b2').value.trim() || defaults.b2,
+    best:+$('best').value,
+    deuce:$('deuce').value,
+    tiebreak:+$('tiebreak').value,
+    first:+$('first').value,
+    sound:$('sound').checked,
+    venue:$('venue').value.trim(),slotStart:$('slot-start').value.trim(),slotEnd:$('slot-end').value.trim()
+  };
+  if((m.total[0]+m.total[1])>0 || m.sets.length>0){
+    if(!confirm('¿Guardar el partido actual e iniciar uno nuevo?')) return false;
+    archiveCurrent();
+  }
+  m=makeMatch(cfg);
+  applyTurnTimes(m);
+  data.current=m;
+  save();
+  render();
+  openPage('match');
+  toast('Partido iniciado');
+  requestKeepAwake();
+  return true;
+}
+function exportHistory(){
+  const json=JSON.stringify({exported:new Date().toISOString(),history:data.history,current:data.current},null,2);
+  if(window.AndroidExport?.saveJson){
+    window.AndroidExport.saveJson(json);
+    return;
+  }
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='punto-padel-historial.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+window.PuntoPadelExport={onSaved:function(ok){
+  if(typeof toast==='function') toast(ok?'Historial exportado correctamente':'No se pudo guardar el historial');
+}};
+
+function openPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  if(id==='config'){loadForm();chooseVoice();}
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>openPage(btn.dataset.page));
+function pickFirstServer(team){
+ if(m.finished!==null || m.created){toast('El saque inicial ya fue elegido');return;}
+ const chosen=team===0?0:2;
+ m.cfg.first=chosen+1; m.server=chosen; m.created=now();
+ event('Comienza el partido. Saca '+playerName(chosen)+' desde DERECHA');
+ save();render();requestKeepAwake();
+ toast('Saca '+playerName(chosen)+' · DERECHA');
+}
+$('pick0').onclick=()=>pickFirstServer(0);
+$('pick1').onclick=()=>pickFirstServer(1);
+function normalizeSpeech(value){return String(value||'').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+// Android puede escribir el mismo nombre de varias maneras: Dany/Dani,
+// Cristian/Cristian, o anteponer articulos a la orden hablada.
+function voiceNameKey(value){return normalizeSpeech(value).replace(/y/g,'i').replace(/\bv\b/g,'b').replace(/\s+/g,'');}
+function onVoiceCommand(heard){
+ const phrases=(Array.isArray(heard)?heard:[heard]).map(x=>String(x||''));
+ const status=$('command-status');
+ status.textContent='🎙️ Escuché: '+phrases.join(' / ');
+ if(!voiceCommandsOn || !m.created || m.finished!==null)return;
+ const names=[m.cfg.a1,m.cfg.a2,m.cfg.b1,m.cfg.b2];
+ const candidates=[];
+ for(const utterance of phrases){
+   const phrase=normalizeSpeech(utterance);
+   const found=phrase.match(/(?:^|\s)punto\s+para\s+(.+)$/);
+   if(!found)continue;
+   const target=voiceNameKey(found[1]);
+   for(let i=0;i<names.length;i++){
+     const key=voiceNameKey(names[i]);
+     if(key && (target===key || target.startsWith(key+'equipo') || target.startsWith(key+'pareja')))
+       candidates.push(i);
+   }
+ }
+ const unique=[...new Set(candidates)];
+ if(unique.length!==1){
+   status.textContent=unique.length>1?'⚠️ Orden ambigua: usá el nombre completo.':'⚠️ No reconocí el nombre. Probá decir «Punto para Dani».';
+   return;
+ }
+ const i=unique[0];
+ status.textContent='✅ Punto para '+names[i];
+ awardPoint(i<2?0:1);
+}
+window.PuntoPadelVoice={onResult:onVoiceCommand,onStatus:msg=>{$('command-status').textContent=String(msg)}};
+$('voice-command').onclick=()=>{
+ if(!window.AndroidVoice || typeof window.AndroidVoice.setListening!=='function'){
+   $('command-status').textContent='ℹ️ En iPhone, los comandos de voz continuos aún no están disponibles. Usá los botones + PUNTO.';return;
+ }
+ voiceCommandsOn=!voiceCommandsOn;
+ $('voice-switch-status').textContent=voiceCommandsOn?'Activados':'Desactivados';
+ $('voice-command').setAttribute('aria-pressed',String(voiceCommandsOn));
+ window.AndroidVoice.setListening(voiceCommandsOn);
+};
+$('award0').onclick=()=> awardPoint(0);
+$('award1').onclick=()=> awardPoint(1);
+document.querySelectorAll('.adv-btn').forEach(btn=>btn.onclick=()=>awardPoint(+btn.dataset.team, btn.dataset.kind));
+$('advanced-toggle').checked = !!m.advanced;
+$('advanced-toggle').onchange = e => { m.advanced=e.target.checked; render(); save(); };
+$('advanced-button').onclick=()=>{m.advanced=!m.advanced;$('advanced-toggle').checked=m.advanced;render();save();};
+$('undo').onclick = undo;
+$('announce').onclick = ()=> speak(`Prueba de voz. ${voiceTeam(0)}. ${pointLabels()[0]}. ${voiceTeam(1)}. ${pointLabels()[1]}. Saca ${playerName(currentServer())} desde ${servingSide().toLowerCase()}.`);
+$('switch').onclick = ()=>{ m.side=1-m.side; const grid=document.querySelector('.scoregrid'); grid.style.direction = m.side ? 'rtl' : 'ltr'; document.querySelectorAll('.team').forEach(el=>el.style.direction='ltr'); save(); toast('Vista de cancha ' + (m.side?'invertida':'normal')); };
+$('voice-language').onchange=e=>{languagePref=e.target.value;localStorage.setItem('padel-voice-language',languagePref);voicePreference='auto';localStorage.setItem('padel-voice-pref','auto');chooseVoice();};
+$('voice-gender').onchange=e=>{genderPref=e.target.value;localStorage.setItem('padel-voice-gender',genderPref);voicePreference='auto';localStorage.setItem('padel-voice-pref','auto');chooseVoice();};
+$('voice-choice').onchange = e => { voicePreference=e.target.value; localStorage.setItem('padel-voice-pref',voicePreference); chooseVoice(); speak('Probando la nueva voz de pádel'); };
+
+// El turno puede iniciarse por separado de un partido sin activar el marcador.
+function configureTurnFromForm(){
+ const start=$('slot-start').value.trim(),end=$('slot-end').value.trim();
+ const ok=/^(?:[01]\d|2[0-3]):[0-5]\d$/;
+ if(!ok.test(start)||!ok.test(end)){toast('Configurá ambas horas en formato 24 hs');return;}
+ const cfg={...m.cfg,venue:$('venue').value.trim(),slotStart:start,slotEnd:end};
+ m.cfg={...m.cfg,...cfg};
+ ensureTurn(m,true);save();updateTurnDisplay();toast('Turno configurado');
+}
+
+$('new').onclick = ()=>{$('championship').checked?createChampionship():newMatch()};
+$('next-champ').onclick=nextChampionshipGame;
+$('finish-now').onclick=finishCurrentNow;
+$('audio-indicator').onclick=()=>{m.cfg.sound=!m.cfg.sound;$('sound').checked=m.cfg.sound;if(m.cfg.sound)unlockAlarm();save();renderAdvanced();};
+$('champ-count').innerHTML=Array.from({length:8},(_,i)=>`<option value="${i+3}" ${i===1?'selected':''}>${i+3} equipos</option>`).join('');
+$('champ-count').onchange=renderChampTeams;
+$('championship').onchange=e=>{$('championship-options').hidden=!e.target.checked;renderChampTeams();renderChampionship();};
+$('champ-create').onclick=createChampionship;
+const tbutton=document.createElement('button');tbutton.type='button';tbutton.className='secondary';tbutton.id='set-turn';tbutton.textContent='⏲ Activar reloj del turno';const ttarget=$('slot-end').closest('.field');ttarget.insertAdjacentElement('afterend',tbutton);tbutton.onclick=configureTurnFromForm;
+renderChampTeams();$('championship').checked=false;$('championship-options').hidden=true;renderChampionship();
+document.addEventListener('pointerdown',unlockAlarm,{once:true});
+$('export').onclick = exportHistory;
+
+render();
+setInterval(()=>{
+  if(document.visibilityState==='visible'){
+    updateTurnDisplay();
+    if(document.querySelector('#stats.active')) renderStats();
+  }
+},1000);
+</script>
+<script>
+// Safari iPhone: la versión web no incorpora el reconocimiento nativo de Android.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
